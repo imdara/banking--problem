@@ -30,68 +30,30 @@
 // account number and the last one is the amount to transfer. Returns status as successful or failure.
 // ○ All the deposit and withdrawal rules are applicable for transfer operation as well.
 
-// Sample input and output
-// Account creation
-// ● Input: Create “Amit Dugal”
-// Output: 1001
-// ● Input: Create “Gauri Kalla”
-// Output: 1002
-// Deposit
-// ● Input: Deposit 1001 500
-// Output: 500
-// ● Input: Deposit 1001 1000
-// Output: 1500
-// ● Input: Deposit 1001 100
-// Output: Minimum deposit amount is 500
-// ● Input: Deposit 1001 60000
-// Output: Maximum deposit amount is 50000
-// ● Input: Deposit 1001 10000
-// Output: 11500
-// ● Input: Deposit 1001 10000
-// Output: Only 3 deposits are allowed in a day
-// Balance
-// ● Input: Balance 1001
-// Output: 11500
-// Withdrawal
-// ● Input: Withdraw 1001 500
-// Output: Minimum withdrawal amount is 1000
-// ● Input: Withdraw 1001 20000
-// Output: Insufficient balance
-// ● Input: Withdraw 1001 1000
-// Output: 10500
-// ● Input: Withdraw 1001 1900
-// Output: 8600
-// ● Input: Withdraw 1001 1000
-// Output: 7600
-// ● Input: Withdraw 1001 5000
-// Output: Only 3 withdrawals are allowed in a day
-// Transfer
-// ● Input: Transfer 1001 1002 5000
-// Output: Successful
-// ● Input: Transfer 1002 1004 500
-// Output: Minimum withdrawal amount is 1000 for account 1002
-// ● Input: Transfer 1002 1004 30000
-// Output: Maximum withdrawal amount is 30000 for account 1002
-
 // Solution for the problem
 
 // we need to create a constructor function that will have all the methods (create, deposit, withdraw, balance, transfer)
 
 function Bank() {
-  this.count = 1000;
-  this.depositsCount = 0;
-  this.withdrawlsCount = 0;
-  this.allAccounts = [];
+  this.count = 1000; // setting count to 1000 by default, this will later be used to assign account numbers
+  this.allAccounts = []; // default bank array with so account objects
+  // create method has one parameter which is the account holder's name
   this.create = function (name) {
-    this.count++;
+    this.count++; // account number
+    // creating a new account with this account number
     var account = {
       accountHolder: name,
       accountBalance: 0,
       accountNumber: this.count,
+      depositsCount: 0, // setting the no. of deposits to 0 by default, this will later be used to limit the no. of deposits to 3
+      withdrawlsCount: 0 // setting the no. of withdrawls to 0 by default, this will later be used to limit the no. of withdrawls to 3
     };
+    // adding this account to the bank
     this.allAccounts.push(account);
     console.log(account.accountNumber);
   };
+
+  // deposit method has two parameters - account number and the deposit amount
   this.deposit = function (accNo, depositAmount) {
     var accountNumbers = this.allAccounts.map(
       (account) => account.accountNumber
@@ -107,14 +69,14 @@ function Bank() {
         account.accountBalance + depositAmount <= 100000 &&
         depositAmount >= 500 &&
         depositAmount <= 50000 &&
-        this.depositsCount < 3
+        account.depositsCount < 3
       ) {
         account.accountBalance += depositAmount;
         this.allAccounts[accountIndex] = account;
-        this.depositsCount++;
+        account.depositsCount++;
         console.log(account.accountBalance);
       } else if (
-        this.depositsCount >= 3 &&
+        account.depositsCount >= 3 &&
         account.accountBalance + depositAmount <= 100000
       )
         console.log("Only 3 deposits allowed in a day");
@@ -126,6 +88,8 @@ function Bank() {
         console.log("Maximum deposit amount is 50000");
     } else console.log("Invalid account number");
   };
+
+  // withdraw method has two parameters - account number and the withdraw amount
   this.withdraw = function (accNo, withdrawAmount) {
     var accountNumbers = this.allAccounts.map(
       (account) => account.accountNumber
@@ -141,14 +105,14 @@ function Bank() {
         account.accountBalance - withdrawAmount >= 0 &&
         withdrawAmount >= 1000 &&
         withdrawAmount <= 25000 &&
-        this.withdrawlsCount < 3
+        account.withdrawlsCount < 3
       ) {
         account.accountBalance -= withdrawAmount;
         this.allAccounts[accountIndex] = account;
-        this.withdrawlsCount++;
+        account.withdrawlsCount++;
         console.log(account.accountBalance);
       } else if (
-        this.withdrawlsCount >= 3 &&
+        account.withdrawlsCount >= 3 &&
         account.accountBalance - withdrawAmount > 0
       )
         console.log("Only 3 withdrawls allowed in a day");
@@ -160,6 +124,8 @@ function Bank() {
         console.log("Maximum withdrawl amount is 25000");
     } else console.log("Invalid account number");
   };
+
+  // balance method has one parameter which is the account number
   this.balance = function (accNo) {
     var account = this.allAccounts.find(
       (account) => account.accountNumber == accNo
@@ -168,6 +134,8 @@ function Bank() {
       ? console.log(account.accountBalance)
       : console.log("Invalid account number");
   };
+
+  // transfer method has three parameters - sender's account number, reciever's account number and the transfer amount
   this.transfer = function (senderAccNo, receiverAccNo, amountToTransfer) {
     var sendersAccount = this.allAccounts.find(
       (account) => account.accountNumber == senderAccNo
@@ -202,6 +170,8 @@ function Bank() {
     else if (amountToTransfer > 25000)
       console.log("Maximum amount that can be transferred is 25000");
   };
+
+  // allinfo method
   this.allInfo = function () {
     console.log(this.allAccounts);
   };
